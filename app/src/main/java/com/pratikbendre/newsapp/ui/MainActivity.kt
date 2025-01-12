@@ -1,7 +1,8 @@
-package com.pratikbendre.newsapp
+package com.pratikbendre.newsapp.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.pratikbendre.newsapp.R
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
