@@ -3,10 +3,10 @@ package com.pratikbendre.newsapp.ui.search
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.pratikbendre.newsapp.data.model.Article
 import com.pratikbendre.newsapp.databinding.TopHeadlineItemLayoutBinding
 import com.pratikbendre.newsapp.utils.ItemClickListener
+import com.pratikbendre.newsapp.utils.loadimage
 
 class SearchAdapter(private val articleList: ArrayList<Article>) :
     RecyclerView.Adapter<SearchAdapter.DataViewHolder>() {
@@ -18,9 +18,7 @@ class SearchAdapter(private val articleList: ArrayList<Article>) :
             binding.textViewTitle.text = article.title
             binding.textViewDescription.text = article.description
             binding.textViewSource.text = article.source.name
-            Glide.with(binding.imageViewBanner.context)
-                .load(article.imageurl)
-                .into(binding.imageViewBanner)
+            binding.imageViewBanner.loadimage(article.imageurl)
             itemView.setOnClickListener {
                 itemClickListener(article.url)
             }

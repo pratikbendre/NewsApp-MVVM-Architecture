@@ -15,6 +15,10 @@ class CountriesViewModel(private val countriesRepository: CountriesRepository) :
     val uiState: StateFlow<UiState<List<Country>>> = _uiState
 
     init {
+        fetchCountries()
+    }
+
+    fun fetchCountries() {
         viewModelScope.launch {
             countriesRepository.getCountris().catch { e ->
                 _uiState.value = UiState.Error(e.toString())

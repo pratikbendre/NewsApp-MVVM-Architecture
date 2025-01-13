@@ -1,17 +1,17 @@
 package com.pratikbendre.newsapp.ui.newsSources
 
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.pratikbendre.newsapp.NewsApplication
+import com.pratikbendre.newsapp.R
 import com.pratikbendre.newsapp.data.model.NewsSources
 import com.pratikbendre.newsapp.databinding.ActivityNewsSourcesBinding
 import com.pratikbendre.newsapp.di.components.DaggerActivityComponent
@@ -19,6 +19,7 @@ import com.pratikbendre.newsapp.di.module.ActivityModule
 import com.pratikbendre.newsapp.ui.base.UiState
 import com.pratikbendre.newsapp.ui.topheadlinebysource.TopHeadlineBySourceActivity
 import com.pratikbendre.newsapp.utils.AppConstants.SOURCE
+import com.pratikbendre.newsapp.utils.showAlert
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -72,9 +73,7 @@ class NewsSourcesActivity : AppCompatActivity() {
 
                         is UiState.Error -> {
                             binding.progressBar.visibility = View.GONE
-                            Log.d("TAG", "setupObserver: " + it.message)
-                            Toast.makeText(this@NewsSourcesActivity, it.message, Toast.LENGTH_LONG)
-                                .show()
+                            showError()
                         }
                     }
                 }
@@ -91,5 +90,19 @@ class NewsSourcesActivity : AppCompatActivity() {
         DaggerActivityComponent.builder()
             .applicationComponent((application as NewsApplication).applicationComponent)
             .activityModule(ActivityModule(this)).build().inject(this)
+    }
+
+
+    private fun showError() {
+        AlertDialog.Builder(this).apply {
+            showAlert(
+                this@NewsSourcesActivity,
+                getString(R.string.oops),
+                getString(R.string.something_went_wrong_lets_try_again_one_more_time),
+                buttonClickListener = {
+                    newsSourcesViewModel.fetchSource()
+                }
+            )
+        }
     }
 }

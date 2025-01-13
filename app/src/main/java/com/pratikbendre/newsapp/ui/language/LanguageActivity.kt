@@ -1,16 +1,17 @@
 package com.pratikbendre.newsapp.ui.language
 
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.pratikbendre.newsapp.NewsApplication
+import com.pratikbendre.newsapp.R
 import com.pratikbendre.newsapp.data.model.Language
 import com.pratikbendre.newsapp.databinding.ActivityLanguageBinding
 import com.pratikbendre.newsapp.di.components.DaggerActivityComponent
@@ -18,6 +19,7 @@ import com.pratikbendre.newsapp.di.module.ActivityModule
 import com.pratikbendre.newsapp.ui.base.UiState
 import com.pratikbendre.newsapp.ui.topheadlinebysource.TopHeadlineBySourceActivity
 import com.pratikbendre.newsapp.utils.AppConstants.LANGUAGE
+import com.pratikbendre.newsapp.utils.showAlert
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -73,8 +75,7 @@ class LanguageActivity : AppCompatActivity() {
                         is UiState.Error -> {
                             binding.progressBar.visibility = View.GONE
                             binding.recyclerView.visibility = View.GONE
-                            Toast.makeText(this@LanguageActivity, it.message, Toast.LENGTH_SHORT)
-                                .show()
+                            showError()
                         }
                     }
                 }
@@ -93,5 +94,19 @@ class LanguageActivity : AppCompatActivity() {
     private fun renderList(languagesList: List<Language>) {
         adapter.addData(languagesList)
         adapter.notifyDataSetChanged()
+    }
+
+
+    private fun showError() {
+        AlertDialog.Builder(this).apply {
+            showAlert(
+                this@LanguageActivity,
+                getString(R.string.oops),
+                getString(R.string.something_went_wrong_lets_try_again_one_more_time),
+                buttonClickListener = {
+                    languageViewModel.fetchLanguages()
+                }
+            )
+        }
     }
 }

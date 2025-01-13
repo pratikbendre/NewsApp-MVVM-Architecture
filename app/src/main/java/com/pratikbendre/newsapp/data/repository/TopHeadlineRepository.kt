@@ -14,7 +14,9 @@ class TopHeadlineRepository @Inject constructor(private val networkService: Netw
         return flow {
             emit(networkService.getTopHeadlines(country))
         }.map {
-            it.articles
+            it.articles.filter {
+                it.title != "[Removed]"
+            }
         }
     }
 
@@ -23,7 +25,9 @@ class TopHeadlineRepository @Inject constructor(private val networkService: Netw
         return flow {
             emit(networkService.getTopHeadlinesByLanguage(language))
         }.map {
-            it.articles
+            it.articles.filter {
+                it.title != "[Removed]"
+            }
         }
     }
 }

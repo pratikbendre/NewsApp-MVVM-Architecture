@@ -6,4 +6,5 @@
     <color name="chip_background_selected">#DDDDDD</color>
     <color name="chip_text">#000000</color>
     <color name="chip_text_selected">#333333</color>
+    <color name="red">#FFFF0000</color>
 </resources>

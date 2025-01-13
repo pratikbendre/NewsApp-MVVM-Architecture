@@ -3,9 +3,9 @@ package com.pratikbendre.newsapp.ui.topheadlinebysource
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.pratikbendre.newsapp.data.model.Article
 import com.pratikbendre.newsapp.databinding.TopHeadlineItemLayoutBinding
+import com.pratikbendre.newsapp.utils.loadimage
 
 class TopHeadlineBySourceAdapter(private val articleList: ArrayList<Article>) :
     RecyclerView.Adapter<TopHeadlineBySourceAdapter.DataViewholder>() {
@@ -15,9 +15,8 @@ class TopHeadlineBySourceAdapter(private val articleList: ArrayList<Article>) :
             binding.textViewTitle.text = article.title
             binding.textViewDescription.text = article.description
             binding.textViewSource.text = article.source.name
-            Glide.with(binding.imageViewBanner.context)
-                .load(article.imageurl)
-                .into(binding.imageViewBanner)
+            binding.imageViewBanner.loadimage(article.imageurl)
+
         }
     }
 

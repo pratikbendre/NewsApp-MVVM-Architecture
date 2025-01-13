@@ -1,16 +1,17 @@
 package com.pratikbendre.newsapp.ui.topheadlinebysource
 
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.pratikbendre.newsapp.NewsApplication
+import com.pratikbendre.newsapp.R
 import com.pratikbendre.newsapp.data.model.Article
 import com.pratikbendre.newsapp.databinding.ActivityTopHeadlineBySourceBinding
 import com.pratikbendre.newsapp.di.components.DaggerActivityComponent
@@ -18,6 +19,7 @@ import com.pratikbendre.newsapp.di.module.ActivityModule
 import com.pratikbendre.newsapp.ui.base.UiState
 import com.pratikbendre.newsapp.utils.AppConstants.LANGUAGE
 import com.pratikbendre.newsapp.utils.AppConstants.SOURCE
+import com.pratikbendre.newsapp.utils.showAlert
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -41,6 +43,9 @@ class TopHeadlineBySourceActivity : AppCompatActivity() {
 
     @Inject
     lateinit var topHeadlineBySourceViewModel: TopHeadlineBySourceViewModel
+
+    private lateinit var filterName: String
+    private lateinit var filterValue: String
     override fun onCreate(savedInstanceState: Bundle?) {
         getDependencies()
         super.onCreate(savedInstanceState)
@@ -49,8 +54,8 @@ class TopHeadlineBySourceActivity : AppCompatActivity() {
         setupUI()
         setupObservers()
         val bundle: Bundle? = intent.extras
-        val filterName: String? = bundle?.getString(EXTRAS_FILTER_NAME)
-        val filterValue: String? = bundle?.getString(EXTRAS_FILTER_VALUE)
+        filterName = bundle?.getString(EXTRAS_FILTER_NAME)!!
+        filterValue = bundle?.getString(EXTRAS_FILTER_VALUE)!!
 
         if (filterName.equals(SOURCE, true)) {
             topHeadlineBySourceViewModel.fetchNewsBySource(filterValue!!)
@@ -84,9 +89,7 @@ class TopHeadlineBySourceActivity : AppCompatActivity() {
                         is UiState.Error -> {
                             binding.progressBar.visibility = View.GONE
                             binding.recyclerView.visibility = View.GONE
-                            Toast.makeText(
-                                this@TopHeadlineBySourceActivity, it.message, Toast.LENGTH_SHORT
-                            ).show()
+                            showError()
                         }
                     }
                 }
@@ -103,5 +106,23 @@ class TopHeadlineBySourceActivity : AppCompatActivity() {
     private fun renderList(article: List<Article>) {
         adapter.addData(article)
         adapter.notifyDataSetChanged()
+    }
+
+
+    private fun showError() {
+        AlertDialog.Builder(this).apply {
+            showAlert(
+                this@TopHeadlineBySourceActivity,
+                getString(R.string.oops),
+                getString(R.string.something_went_wrong_lets_try_again_one_more_time),
+                buttonClickListener = {
+                    if (filterName.equals(SOURCE, true)) {
+                        topHeadlineBySourceViewModel.fetchNewsBySource(filterValue!!)
+                    } else if (filterName.equals(LANGUAGE, true)) {
+                        topHeadlineBySourceViewModel.fetchNewsByLanguage(filterValue!!)
+                    }
+                }
+            )
+        }
     }
 }

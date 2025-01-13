@@ -2,11 +2,13 @@ package com.pratikbendre.newsapp.di.module
 
 import android.content.Context
 import com.pratikbendre.newsapp.NewsApplication
+import com.pratikbendre.newsapp.data.api.NetworkInterceptor
 import com.pratikbendre.newsapp.data.api.NetworkService
 import com.pratikbendre.newsapp.di.ApplicationContext
 import com.pratikbendre.newsapp.di.BaseUrl
 import dagger.Module
 import dagger.Provides
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
@@ -34,9 +36,13 @@ class ApplicationModule(private val application: NewsApplication) {
         @BaseUrl baseUrl: String, gsonConverterFactory: GsonConverterFactory
     ): NetworkService {
 
+        val networkInterceptor = NetworkInterceptor()
+        val client = OkHttpClient.Builder().addInterceptor(networkInterceptor).build()
+
         return Retrofit.Builder()
             .baseUrl(baseUrl)
             .addConverterFactory(gsonConverterFactory)
+            .client(client)
             .build()
             .create(NetworkService::class.java)
     }

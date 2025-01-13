@@ -12,7 +12,9 @@ class SearchRepository @Inject constructor(private val networkService: NetworkSe
         return flow {
             emit(networkService.searchNews(value))
         }.map {
-            it.articles
+            it.articles.filter {
+                it.title != "[Removed]"
+            }
         }
     }
 }

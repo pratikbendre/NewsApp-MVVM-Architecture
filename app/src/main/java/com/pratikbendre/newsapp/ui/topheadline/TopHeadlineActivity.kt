@@ -1,5 +1,6 @@
 package com.pratikbendre.newsapp.ui.topheadline
 
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.res.ColorStateList
@@ -28,6 +29,7 @@ import com.pratikbendre.newsapp.di.components.DaggerActivityComponent
 import com.pratikbendre.newsapp.di.module.ActivityModule
 import com.pratikbendre.newsapp.ui.base.UiState
 import com.pratikbendre.newsapp.ui.language.LanguageViewModel
+import com.pratikbendre.newsapp.utils.showAlert
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -37,10 +39,9 @@ class TopHeadlineActivity : AppCompatActivity() {
     companion object {
         const val EXTRAS_COUNTRY = "EXTRAS_COUNTRY"
         fun getIntent(context: Context, country: String): Intent {
-            return Intent(context, TopHeadlineActivity::class.java)
-                .apply {
-                    putExtra(EXTRAS_COUNTRY, country)
-                }
+            return Intent(context, TopHeadlineActivity::class.java).apply {
+                putExtra(EXTRAS_COUNTRY, country)
+            }
         }
     }
 
@@ -55,6 +56,8 @@ class TopHeadlineActivity : AppCompatActivity() {
     @Inject
     lateinit var languageViewModel: LanguageViewModel
 
+    private var countryCode: String? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         injectDependencies()
         super.onCreate(savedInstanceState)
@@ -64,8 +67,8 @@ class TopHeadlineActivity : AppCompatActivity() {
         setupObserver()
 
         val getBundle: Bundle? = intent.extras
-        val countrCode: String? = getBundle!!.getString(EXTRAS_COUNTRY)
-        topHeadlineViewModel.fetchNews(countrCode!!)
+        countryCode = getBundle!!.getString(EXTRAS_COUNTRY)
+        topHeadlineViewModel.fetchNews(countryCode!!)
     }
 
     private fun setupUI() {
@@ -91,6 +94,7 @@ class TopHeadlineActivity : AppCompatActivity() {
     }
 
     private fun setupObserver() {
+
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 topHeadlineViewModel.uiState.collect {
@@ -108,8 +112,7 @@ class TopHeadlineActivity : AppCompatActivity() {
 
                         is UiState.Error -> {
                             binding.progressBar.visibility = View.GONE
-                            Toast.makeText(this@TopHeadlineActivity, it.message, Toast.LENGTH_LONG)
-                                .show()
+                            showError()
                         }
                     }
                 }
@@ -162,8 +165,7 @@ class TopHeadlineActivity : AppCompatActivity() {
                             it.data.forEach {
                                 chipGroup.addView(
                                     createTagChip(
-                                        this@TopHeadlineActivity,
-                                        it
+                                        this@TopHeadlineActivity, it
                                     )
                                 )
                             }
@@ -204,6 +206,18 @@ class TopHeadlineActivity : AppCompatActivity() {
         return chipGroup.checkedChipIds.mapNotNull { id ->
             val chip = chipGroup.findViewById<Chip>(id)
             chip?.tag as? String
+        }
+    }
+
+
+    private fun showError() {
+        AlertDialog.Builder(this).apply {
+            showAlert(this@TopHeadlineActivity,
+                getString(R.string.oops),
+                getString(R.string.something_went_wrong_lets_try_again_one_more_time),
+                buttonClickListener = {
+                    topHeadlineViewModel.fetchNews(countryCode!!)
+                })
         }
     }
 }

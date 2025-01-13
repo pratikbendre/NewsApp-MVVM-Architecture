@@ -15,6 +15,10 @@ class NewsSourcesViewModel(private val newsSourcesRepository: NewsSourcesReposit
     val uiState: StateFlow<UiState<List<NewsSources>>> = _uiState
 
     init {
+        fetchSource()
+    }
+
+    fun fetchSource() {
         viewModelScope.launch {
             newsSourcesRepository.getSources().catch { e ->
                 _uiState.value = UiState.Error(e.toString())
