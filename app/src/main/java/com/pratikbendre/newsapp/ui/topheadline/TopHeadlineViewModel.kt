@@ -5,8 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.pratikbendre.newsapp.data.model.Article
 import com.pratikbendre.newsapp.data.repository.TopHeadlineRepository
 import com.pratikbendre.newsapp.ui.base.UiState
-import com.pratikbendre.newsapp.utils.AppConstants
-import com.pratikbendre.newsapp.utils.AppConstants.COUNTRY
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
@@ -16,13 +14,9 @@ class TopHeadlineViewModel(private val topHeadlineRepository: TopHeadlineReposit
     private val _uiState = MutableStateFlow<UiState<List<Article>>>(UiState.Loading)
     val uiState: StateFlow<UiState<List<Article>>> = _uiState
 
-    init {
-        fetchNews()
-    }
-
-    private fun fetchNews() {
+    fun fetchNews(country: String) {
         viewModelScope.launch {
-            topHeadlineRepository.getTopHeadlines(COUNTRY)
+            topHeadlineRepository.getTopHeadlines(country)
                 .catch { e ->
                     _uiState.value = UiState.Error(e.toString())
                 }.collect {

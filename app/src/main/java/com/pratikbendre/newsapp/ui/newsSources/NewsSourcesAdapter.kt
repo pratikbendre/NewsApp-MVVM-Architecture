@@ -35,6 +35,7 @@ class NewsSourcesAdapter(private val sourceList: ArrayList<NewsSources>) :
         holder.bind(sourceList[position], itemClickListener)
 
     fun addData(list: List<NewsSources>) {
+        sourceList.clear()
         sourceList.addAll(list)
     }
 

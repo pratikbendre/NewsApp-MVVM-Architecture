@@ -30,5 +30,14 @@
             android:padding="@dimen/dp_10"
             android:text="News Sources"
             android:textSize="@dimen/dp_20" />
+
+        <Button
+            android:id="@+id/countries_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/dp_10"
+            android:padding="@dimen/dp_10"
+            android:text="Countries"
+            android:textSize="@dimen/dp_20" />
     </LinearLayout>
 </LinearLayout>

@@ -3,8 +3,10 @@ package com.pratikbendre.newsapp.ui.main
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.pratikbendre.newsapp.databinding.ActivityMainBinding
+import com.pratikbendre.newsapp.ui.countries.CountriesActivity
 import com.pratikbendre.newsapp.ui.newsSources.NewsSourcesActivity
 import com.pratikbendre.newsapp.ui.topheadline.TopHeadlineActivity
+import com.pratikbendre.newsapp.utils.AppConstants.COUNTRY
 
 
 class MainActivity : AppCompatActivity() {
@@ -18,10 +20,14 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupUI() {
         binding.topHeadlinesBtn.setOnClickListener {
-            startActivity(TopHeadlineActivity.getIntent(this))
+            startActivity(TopHeadlineActivity.getIntent(this, COUNTRY))
         }
         binding.newsSourcesBtn.setOnClickListener {
             startActivity(NewsSourcesActivity.getIntent(this))
+        }
+
+        binding.countriesBtn.setOnClickListener {
+            startActivity(CountriesActivity.getIntent(this))
         }
     }
 }

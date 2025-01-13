@@ -1,83 +1,61 @@
-package com.pratikbendre.newsapp.ui.topheadline
+package com.pratikbendre.newsapp.ui.countries
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.browser.customtabs.CustomTabsIntent
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.pratikbendre.newsapp.NewsApplication
-import com.pratikbendre.newsapp.data.model.Article
-import com.pratikbendre.newsapp.databinding.ActivityTopHeadlineBinding
+import com.pratikbendre.newsapp.data.model.Country
+import com.pratikbendre.newsapp.databinding.ActivityCountriesBinding
 import com.pratikbendre.newsapp.di.components.DaggerActivityComponent
 import com.pratikbendre.newsapp.di.module.ActivityModule
 import com.pratikbendre.newsapp.ui.base.UiState
+import com.pratikbendre.newsapp.ui.topheadline.TopHeadlineActivity
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class TopHeadlineActivity : AppCompatActivity() {
-
-
+class CountriesActivity : AppCompatActivity() {
     companion object {
-        const val EXTRAS_COUNTRY = "EXTRAS_COUNTRY"
-        fun getIntent(context: Context, country: String): Intent {
-            return Intent(context, TopHeadlineActivity::class.java)
-                .apply {
-                    putExtra(EXTRAS_COUNTRY, country)
-                }
+        fun getIntent(context: Context): Intent {
+            return Intent(context, CountriesActivity::class.java)
         }
     }
 
-    @Inject
-    lateinit var topHeadlineViewModel: TopHeadlineViewModel
+    lateinit var binding: ActivityCountriesBinding
 
     @Inject
-    lateinit var adapter: TopHeadlineAdapter
+    lateinit var adapter: CountriesAdapter
 
-    private lateinit var binding: ActivityTopHeadlineBinding
-
+    @Inject
+    lateinit var countriesViewModel: CountriesViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
-        injectDependencies()
+        getDependencies()
         super.onCreate(savedInstanceState)
-        binding = ActivityTopHeadlineBinding.inflate(layoutInflater)
+        binding = ActivityCountriesBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setupUI()
         setupObserver()
-
-        val getBundle: Bundle? = intent.extras
-        val countrCode: String? = getBundle!!.getString(EXTRAS_COUNTRY)
-        topHeadlineViewModel.fetchNews(countrCode!!)
     }
 
     private fun setupUI() {
-        var recyclerView = binding.recyclerView
+        val recyclerView = binding.recyclerView
         recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerView.addItemDecoration(
-            DividerItemDecoration(
-                recyclerView.context,
-                (recyclerView.layoutManager as LinearLayoutManager).orientation
-            )
-        )
         recyclerView.adapter = adapter
-
         adapter.itemClickListener = {
-            val builder = CustomTabsIntent.Builder()
-            val customTabsIntent = builder.build()
-            customTabsIntent.launchUrl(this, Uri.parse(it))
+            startActivity(TopHeadlineActivity.getIntent(this, it))
         }
     }
 
     private fun setupObserver() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                topHeadlineViewModel.uiState.collect {
+                countriesViewModel.uiState.collect {
                     when (it) {
                         is UiState.Success -> {
                             binding.progressBar.visibility = View.GONE
@@ -92,7 +70,7 @@ class TopHeadlineActivity : AppCompatActivity() {
 
                         is UiState.Error -> {
                             binding.progressBar.visibility = View.GONE
-                            Toast.makeText(this@TopHeadlineActivity, it.message, Toast.LENGTH_LONG)
+                            Toast.makeText(this@CountriesActivity, it.message, Toast.LENGTH_SHORT)
                                 .show()
                         }
                     }
@@ -101,12 +79,12 @@ class TopHeadlineActivity : AppCompatActivity() {
         }
     }
 
-    private fun renderList(articleList: List<Article>) {
-        adapter.addData(articleList)
+    private fun renderList(list: List<Country>) {
+        adapter.addData(list)
         adapter.notifyDataSetChanged()
     }
 
-    private fun injectDependencies() {
+    private fun getDependencies() {
         DaggerActivityComponent.builder()
             .applicationComponent((application as NewsApplication).applicationComponent)
             .activityModule(ActivityModule(this)).build().inject(this)

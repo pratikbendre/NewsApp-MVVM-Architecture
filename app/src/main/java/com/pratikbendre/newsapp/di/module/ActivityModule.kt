@@ -3,11 +3,14 @@ package com.pratikbendre.newsapp.di.module
 import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import com.pratikbendre.newsapp.data.repository.CountriesRepository
 import com.pratikbendre.newsapp.data.repository.NewsSourcesRepository
 import com.pratikbendre.newsapp.data.repository.TopHeadlineBySourceRepository
 import com.pratikbendre.newsapp.data.repository.TopHeadlineRepository
 import com.pratikbendre.newsapp.di.ActivityContext
 import com.pratikbendre.newsapp.ui.base.ViewModelProviderFactory
+import com.pratikbendre.newsapp.ui.countries.CountriesAdapter
+import com.pratikbendre.newsapp.ui.countries.CountriesViewModel
 import com.pratikbendre.newsapp.ui.newsSources.NewsSourcesAdapter
 import com.pratikbendre.newsapp.ui.newsSources.NewsSourcesViewModel
 import com.pratikbendre.newsapp.ui.topheadline.TopHeadlineAdapter
@@ -57,4 +60,17 @@ class ActivityModule(private val activity: AppCompatActivity) {
 
     @Provides
     fun provideTopHeadlineBySourceAdapter() = TopHeadlineBySourceAdapter(ArrayList())
+
+
+    @Provides
+    fun provideCountriesViewModel(countriesRepository: CountriesRepository): CountriesViewModel {
+        return ViewModelProvider(activity,
+            ViewModelProviderFactory(CountriesViewModel::class) {
+                CountriesViewModel(countriesRepository)
+            })[CountriesViewModel::class.java]
+    }
+    @Provides
+    fun provideCountriesAdapter() = CountriesAdapter(ArrayList())
+    @Provides
+    fun provideCountriesRepository() = CountriesRepository()
 }

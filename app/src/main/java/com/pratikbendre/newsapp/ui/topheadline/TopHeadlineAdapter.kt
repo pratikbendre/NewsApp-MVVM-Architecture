@@ -41,6 +41,7 @@ class TopHeadlineAdapter(private val articleList: ArrayList<Article>) :
         holder.bind(articleList[position], itemClickListener)
 
     fun addData(list: List<Article>) {
+        articleList.clear()
         articleList.addAll(list)
     }
 }
