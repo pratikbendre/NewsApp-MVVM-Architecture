@@ -34,7 +34,10 @@
             android:name=".ui.topheadlinebysource.TopHeadlineBySourceActivity"
             android:exported="false" />
         <activity
-            android:name="com.pratikbendre.newsapp.ui.countries.CountriesActivity"
+            android:name=".ui.countries.CountriesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.language.LanguageActivity"
             android:exported="false" />
     </application>
 

@@ -1,4 +1,4 @@
-package com.pratikbendre.newsapp.ui.topheadlinebysource
+package com.pratikbendre.newsapp.ui.language
 
 import android.content.Context
 import android.content.Intent
@@ -11,51 +11,40 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.pratikbendre.newsapp.NewsApplication
-import com.pratikbendre.newsapp.data.model.Article
-import com.pratikbendre.newsapp.databinding.ActivityTopHeadlineBySourceBinding
+import com.pratikbendre.newsapp.data.model.Language
+import com.pratikbendre.newsapp.databinding.ActivityLanguageBinding
 import com.pratikbendre.newsapp.di.components.DaggerActivityComponent
 import com.pratikbendre.newsapp.di.module.ActivityModule
 import com.pratikbendre.newsapp.ui.base.UiState
+import com.pratikbendre.newsapp.ui.topheadlinebysource.TopHeadlineBySourceActivity
 import com.pratikbendre.newsapp.utils.AppConstants.LANGUAGE
-import com.pratikbendre.newsapp.utils.AppConstants.SOURCE
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class TopHeadlineBySourceActivity : AppCompatActivity() {
+class LanguageActivity : AppCompatActivity() {
     companion object {
-        const val EXTRAS_FILTER_NAME = "EXTRAS_FILTER_NAME"
-        const val EXTRAS_FILTER_VALUE = "EXTRAS_FILTER_VALUE"
-
-        fun getIntent(context: Context, filterName: String, filterValue: String): Intent {
-            return Intent(context, TopHeadlineBySourceActivity::class.java).apply {
-                putExtra(EXTRAS_FILTER_NAME, filterName)
-                putExtra(EXTRAS_FILTER_VALUE, filterValue)
-            }
+        fun getIntent(context: Context): Intent {
+            return Intent(context, LanguageActivity::class.java)
         }
     }
 
-    private lateinit var binding: ActivityTopHeadlineBySourceBinding
+    private lateinit var binding: ActivityLanguageBinding
+
 
     @Inject
-    lateinit var adapter: TopHeadlineBySourceAdapter
+    lateinit var languageViewModel: LanguageViewModel
 
     @Inject
-    lateinit var topHeadlineBySourceViewModel: TopHeadlineBySourceViewModel
+    lateinit var adapter: LanguageAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         getDependencies()
         super.onCreate(savedInstanceState)
-        binding = ActivityTopHeadlineBySourceBinding.inflate(layoutInflater)
+        binding = ActivityLanguageBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setupUI()
         setupObservers()
-        val bundle: Bundle? = intent.extras
-        val filterName: String? = bundle?.getString(EXTRAS_FILTER_NAME)
-        val filterValue: String? = bundle?.getString(EXTRAS_FILTER_VALUE)
-
-        if (filterName.equals(SOURCE, true)) {
-            topHeadlineBySourceViewModel.fetchNewsBySource(filterValue!!)
-        } else if (filterName.equals(LANGUAGE, true)) {
-            topHeadlineBySourceViewModel.fetchNewsByLanguage(filterValue!!)
+        adapter.itemClickListener = {
+            startActivity(TopHeadlineBySourceActivity.getIntent(this, LANGUAGE, it))
         }
     }
 
@@ -68,7 +57,7 @@ class TopHeadlineBySourceActivity : AppCompatActivity() {
     private fun setupObservers() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                topHeadlineBySourceViewModel.uiState.collect {
+                languageViewModel.uiState.collect {
                     when (it) {
                         is UiState.Success -> {
                             binding.progressBar.visibility = View.GONE
@@ -84,9 +73,8 @@ class TopHeadlineBySourceActivity : AppCompatActivity() {
                         is UiState.Error -> {
                             binding.progressBar.visibility = View.GONE
                             binding.recyclerView.visibility = View.GONE
-                            Toast.makeText(
-                                this@TopHeadlineBySourceActivity, it.message, Toast.LENGTH_SHORT
-                            ).show()
+                            Toast.makeText(this@LanguageActivity, it.message, Toast.LENGTH_SHORT)
+                                .show()
                         }
                     }
                 }
@@ -94,14 +82,16 @@ class TopHeadlineBySourceActivity : AppCompatActivity() {
         }
     }
 
-    private fun getDependencies() {
+    fun getDependencies() {
         DaggerActivityComponent.builder()
             .applicationComponent((application as NewsApplication).applicationComponent)
-            .activityModule(ActivityModule(this)).build().inject(this)
+            .activityModule(ActivityModule(this))
+            .build()
+            .inject(this)
     }
 
-    private fun renderList(article: List<Article>) {
-        adapter.addData(article)
+    private fun renderList(languagesList: List<Language>) {
+        adapter.addData(languagesList)
         adapter.notifyDataSetChanged()
     }
 }

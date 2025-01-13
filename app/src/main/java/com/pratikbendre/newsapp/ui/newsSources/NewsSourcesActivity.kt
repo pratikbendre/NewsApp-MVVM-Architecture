@@ -18,6 +18,7 @@ import com.pratikbendre.newsapp.di.components.DaggerActivityComponent
 import com.pratikbendre.newsapp.di.module.ActivityModule
 import com.pratikbendre.newsapp.ui.base.UiState
 import com.pratikbendre.newsapp.ui.topheadlinebysource.TopHeadlineBySourceActivity
+import com.pratikbendre.newsapp.utils.AppConstants.SOURCE
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -49,7 +50,7 @@ class NewsSourcesActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
         adapter.itemClickListener = {
-            startActivity(TopHeadlineBySourceActivity.getIntent(this, it))
+            startActivity(TopHeadlineBySourceActivity.getIntent(this, SOURCE, it))
         }
     }
 

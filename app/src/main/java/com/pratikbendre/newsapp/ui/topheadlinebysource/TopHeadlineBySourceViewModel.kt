@@ -14,9 +14,19 @@ class TopHeadlineBySourceViewModel(private val topHeadlineBySourceRepository: To
     ViewModel() {
     private val _uiState = MutableStateFlow<UiState<List<Article>>>(UiState.Loading)
     val uiState: StateFlow<UiState<List<Article>>> = _uiState
-    fun fetchNews(source: String) {
+    fun fetchNewsBySource(source: String) {
         viewModelScope.launch {
             topHeadlineBySourceRepository.getTopHeadlineBySource(source).catch { e ->
+                _uiState.value = UiState.Error(e.toString())
+            }.collect {
+                _uiState.value = UiState.Success(it)
+            }
+        }
+    }
+
+    fun fetchNewsByLanguage(language: String) {
+        viewModelScope.launch {
+            topHeadlineBySourceRepository.getTopHeadlineByLanguage(language).catch { e ->
                 _uiState.value = UiState.Error(e.toString())
             }.collect {
                 _uiState.value = UiState.Success(it)

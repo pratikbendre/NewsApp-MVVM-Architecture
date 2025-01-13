@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.pratikbendre.newsapp.data.repository.CountriesRepository
+import com.pratikbendre.newsapp.data.repository.LanguageRepository
 import com.pratikbendre.newsapp.data.repository.NewsSourcesRepository
 import com.pratikbendre.newsapp.data.repository.TopHeadlineBySourceRepository
 import com.pratikbendre.newsapp.data.repository.TopHeadlineRepository
@@ -11,6 +12,8 @@ import com.pratikbendre.newsapp.di.ActivityContext
 import com.pratikbendre.newsapp.ui.base.ViewModelProviderFactory
 import com.pratikbendre.newsapp.ui.countries.CountriesAdapter
 import com.pratikbendre.newsapp.ui.countries.CountriesViewModel
+import com.pratikbendre.newsapp.ui.language.LanguageAdapter
+import com.pratikbendre.newsapp.ui.language.LanguageViewModel
 import com.pratikbendre.newsapp.ui.newsSources.NewsSourcesAdapter
 import com.pratikbendre.newsapp.ui.newsSources.NewsSourcesViewModel
 import com.pratikbendre.newsapp.ui.topheadline.TopHeadlineAdapter
@@ -50,6 +53,7 @@ class ActivityModule(private val activity: AppCompatActivity) {
 
     @Provides
     fun provideNewsSourcesAdapter() = NewsSourcesAdapter(ArrayList())
+
     @Provides
     fun provideTopHeadlineBySourceViewModel(topHeadlineBySourceRepository: TopHeadlineBySourceRepository): TopHeadlineBySourceViewModel {
         return ViewModelProvider(activity,
@@ -69,8 +73,25 @@ class ActivityModule(private val activity: AppCompatActivity) {
                 CountriesViewModel(countriesRepository)
             })[CountriesViewModel::class.java]
     }
+
     @Provides
     fun provideCountriesAdapter() = CountriesAdapter(ArrayList())
+
     @Provides
     fun provideCountriesRepository() = CountriesRepository()
+
+
+    @Provides
+    fun provideLanguageViewModel(languageRepository: LanguageRepository): LanguageViewModel {
+        return ViewModelProvider(activity,
+            ViewModelProviderFactory(LanguageViewModel::class) {
+                LanguageViewModel(languageRepository)
+            })[LanguageViewModel::class.java]
+    }
+
+    @Provides
+    fun provideLanguageAdapter() = LanguageAdapter(ArrayList())
+
+    @Provides
+    fun provideLanguageRepository() = LanguageRepository()
 }
