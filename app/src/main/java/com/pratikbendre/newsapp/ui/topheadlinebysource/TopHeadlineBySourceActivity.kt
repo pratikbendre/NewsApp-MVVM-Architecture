@@ -1,75 +1,64 @@
-package com.pratikbendre.newsapp.ui.topheadline
+package com.pratikbendre.newsapp.ui.topheadlinebysource
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.browser.customtabs.CustomTabsIntent
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.pratikbendre.newsapp.NewsApplication
 import com.pratikbendre.newsapp.data.model.Article
-import com.pratikbendre.newsapp.databinding.ActivityTopHeadlineBinding
+import com.pratikbendre.newsapp.databinding.ActivityTopHeadlineBySourceBinding
 import com.pratikbendre.newsapp.di.components.DaggerActivityComponent
 import com.pratikbendre.newsapp.di.module.ActivityModule
 import com.pratikbendre.newsapp.ui.base.UiState
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class TopHeadlineActivity : AppCompatActivity() {
-
-
+class TopHeadlineBySourceActivity : AppCompatActivity() {
     companion object {
-        fun getIntent(context: Context): Intent {
-            return Intent(context, TopHeadlineActivity::class.java)
+        const val EXTRAS_SOURCE = "EXTRAS_SOURCE"
+        fun getIntent(context: Context, source: String): Intent {
+            return Intent(context, TopHeadlineBySourceActivity::class.java)
+                .apply {
+                    putExtra(EXTRAS_SOURCE, source)
+                }
         }
     }
 
-    @Inject
-    lateinit var newsListViewModel: TopHeadlineViewModel
+    private lateinit var binding: ActivityTopHeadlineBySourceBinding
 
     @Inject
-    lateinit var adapter: TopHeadlineAdapter
+    lateinit var adapter: TopHeadlineBySourceAdapter
 
-    private lateinit var binding: ActivityTopHeadlineBinding
-
+    @Inject
+    lateinit var topHeadlineBySourceViewModel: TopHeadlineBySourceViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
-        injectDependencies()
+        getDependencies()
         super.onCreate(savedInstanceState)
-        binding = ActivityTopHeadlineBinding.inflate(layoutInflater)
+        binding = ActivityTopHeadlineBySourceBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setupUI()
-        setupObserver()
+        setupObservers()
+        val bundle: Bundle? = intent.extras
+        val source: String? = bundle?.getString(EXTRAS_SOURCE)
+        topHeadlineBySourceViewModel.fetchNews(source!!)
     }
 
     private fun setupUI() {
-        var recyclerView = binding.recyclerView
+        val recyclerView = binding.recyclerView
         recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerView.addItemDecoration(
-            DividerItemDecoration(
-                recyclerView.context,
-                (recyclerView.layoutManager as LinearLayoutManager).orientation
-            )
-        )
         recyclerView.adapter = adapter
-
-        adapter.itemClickListener = {
-            val builder = CustomTabsIntent.Builder()
-            val customTabsIntent = builder.build()
-            customTabsIntent.launchUrl(this, Uri.parse(it))
-        }
     }
 
-    private fun setupObserver() {
+    private fun setupObservers() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                newsListViewModel.uiState.collect {
+                topHeadlineBySourceViewModel.uiState.collect {
                     when (it) {
                         is UiState.Success -> {
                             binding.progressBar.visibility = View.GONE
@@ -84,8 +73,12 @@ class TopHeadlineActivity : AppCompatActivity() {
 
                         is UiState.Error -> {
                             binding.progressBar.visibility = View.GONE
-                            Toast.makeText(this@TopHeadlineActivity, it.message, Toast.LENGTH_LONG)
-                                .show()
+                            binding.recyclerView.visibility = View.GONE
+                            Toast.makeText(
+                                this@TopHeadlineBySourceActivity,
+                                it.message,
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                     }
                 }
@@ -93,14 +86,16 @@ class TopHeadlineActivity : AppCompatActivity() {
         }
     }
 
-    private fun renderList(articleList: List<Article>) {
-        adapter.addData(articleList)
-        adapter.notifyDataSetChanged()
-    }
-
-    private fun injectDependencies() {
+    private fun getDependencies() {
         DaggerActivityComponent.builder()
             .applicationComponent((application as NewsApplication).applicationComponent)
-            .activityModule(ActivityModule(this)).build().inject(this)
+            .activityModule(ActivityModule(this))
+            .build()
+            .inject(this)
+    }
+
+    private fun renderList(article: List<Article>) {
+        adapter.addData(article)
+        adapter.notifyDataSetChanged()
     }
 }

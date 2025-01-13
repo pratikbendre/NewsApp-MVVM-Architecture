@@ -1,75 +1,62 @@
-package com.pratikbendre.newsapp.ui.topheadline
+package com.pratikbendre.newsapp.ui.newsSources
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.browser.customtabs.CustomTabsIntent
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.pratikbendre.newsapp.NewsApplication
-import com.pratikbendre.newsapp.data.model.Article
-import com.pratikbendre.newsapp.databinding.ActivityTopHeadlineBinding
+import com.pratikbendre.newsapp.data.model.NewsSources
+import com.pratikbendre.newsapp.databinding.ActivityNewsSourcesBinding
 import com.pratikbendre.newsapp.di.components.DaggerActivityComponent
 import com.pratikbendre.newsapp.di.module.ActivityModule
 import com.pratikbendre.newsapp.ui.base.UiState
+import com.pratikbendre.newsapp.ui.topheadlinebysource.TopHeadlineBySourceActivity
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class TopHeadlineActivity : AppCompatActivity() {
-
-
+class NewsSourcesActivity : AppCompatActivity() {
     companion object {
         fun getIntent(context: Context): Intent {
-            return Intent(context, TopHeadlineActivity::class.java)
+            return Intent(context, NewsSourcesActivity::class.java)
         }
     }
 
-    @Inject
-    lateinit var newsListViewModel: TopHeadlineViewModel
+    private lateinit var binding: ActivityNewsSourcesBinding
 
     @Inject
-    lateinit var adapter: TopHeadlineAdapter
+    lateinit var newsSourcesViewModel: NewsSourcesViewModel
 
-    private lateinit var binding: ActivityTopHeadlineBinding
-
+    @Inject
+    lateinit var adapter: NewsSourcesAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
-        injectDependencies()
+        getDependencies()
         super.onCreate(savedInstanceState)
-        binding = ActivityTopHeadlineBinding.inflate(layoutInflater)
+        binding = ActivityNewsSourcesBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setupUI()
         setupObserver()
     }
 
     private fun setupUI() {
-        var recyclerView = binding.recyclerView
+        val recyclerView = binding.recyclerView
         recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerView.addItemDecoration(
-            DividerItemDecoration(
-                recyclerView.context,
-                (recyclerView.layoutManager as LinearLayoutManager).orientation
-            )
-        )
         recyclerView.adapter = adapter
-
         adapter.itemClickListener = {
-            val builder = CustomTabsIntent.Builder()
-            val customTabsIntent = builder.build()
-            customTabsIntent.launchUrl(this, Uri.parse(it))
+            startActivity(TopHeadlineBySourceActivity.getIntent(this, it))
         }
     }
 
     private fun setupObserver() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                newsListViewModel.uiState.collect {
+                newsSourcesViewModel.uiState.collect {
                     when (it) {
                         is UiState.Success -> {
                             binding.progressBar.visibility = View.GONE
@@ -84,7 +71,8 @@ class TopHeadlineActivity : AppCompatActivity() {
 
                         is UiState.Error -> {
                             binding.progressBar.visibility = View.GONE
-                            Toast.makeText(this@TopHeadlineActivity, it.message, Toast.LENGTH_LONG)
+                            Log.d("TAG", "setupObserver: " + it.message)
+                            Toast.makeText(this@NewsSourcesActivity, it.message, Toast.LENGTH_LONG)
                                 .show()
                         }
                     }
@@ -93,12 +81,12 @@ class TopHeadlineActivity : AppCompatActivity() {
         }
     }
 
-    private fun renderList(articleList: List<Article>) {
-        adapter.addData(articleList)
+    private fun renderList(newssources: List<NewsSources>) {
+        adapter.addData(newssources)
         adapter.notifyDataSetChanged()
     }
 
-    private fun injectDependencies() {
+    private fun getDependencies() {
         DaggerActivityComponent.builder()
             .applicationComponent((application as NewsApplication).applicationComponent)
             .activityModule(ActivityModule(this)).build().inject(this)

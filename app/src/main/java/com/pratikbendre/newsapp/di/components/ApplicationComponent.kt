@@ -3,6 +3,8 @@ package com.pratikbendre.newsapp.di.components
 import android.content.Context
 import com.pratikbendre.newsapp.NewsApplication
 import com.pratikbendre.newsapp.data.api.NetworkService
+import com.pratikbendre.newsapp.data.repository.NewsSourcesRepository
+import com.pratikbendre.newsapp.data.repository.TopHeadlineBySourceRepository
 import com.pratikbendre.newsapp.data.repository.TopHeadlineRepository
 import com.pratikbendre.newsapp.di.ApplicationContext
 import com.pratikbendre.newsapp.di.module.ApplicationModule
@@ -20,4 +22,8 @@ interface ApplicationComponent {
     fun getNetworkService(): NetworkService
 
     fun getTopHeadlineRepository(): TopHeadlineRepository
+
+    fun getNewsSourcesRepository(): NewsSourcesRepository
+
+    fun getTopHeadlineBySourceRepository(): TopHeadlineBySourceRepository
 }
