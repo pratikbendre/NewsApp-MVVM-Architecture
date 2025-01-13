@@ -8,6 +8,8 @@ import com.pratikbendre.newsapp.ui.base.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.launch
 
 class TopHeadlineViewModel(private val topHeadlineRepository: TopHeadlineRepository) : ViewModel() {
@@ -24,4 +26,29 @@ class TopHeadlineViewModel(private val topHeadlineRepository: TopHeadlineReposit
                 }
         }
     }
+
+
+    fun fetchNewsByLanguage(languages: List<String>) {
+        viewModelScope.launch {
+            _uiState.value = UiState.Loading
+            val headlineFlows = languages.map { language ->
+                topHeadlineRepository.getTopHeadlinesByLanguage(language)
+            }
+            headlineFlows.reduce { flow1, flow2 ->
+                flow1.zip(flow2) { headlines1, headlines2 ->
+                    val allArticlesFromApi = mutableListOf<Article>()
+                    allArticlesFromApi.addAll(headlines1)
+                    allArticlesFromApi.addAll(headlines2)
+                    return@zip allArticlesFromApi
+                }
+            }.map {
+                it.shuffled()
+            }.catch { e ->
+                _uiState.value = UiState.Error(e.toString())
+            }.collect {
+                _uiState.value = UiState.Success(it)
+            }
+        }
+    }
+
 }
