@@ -39,6 +39,9 @@
         <activity
             android:name=".ui.language.LanguageActivity"
             android:exported="false" />
+        <activity
+            android:name=".ui.search.SearchActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

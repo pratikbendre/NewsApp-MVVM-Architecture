@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.pratikbendre.newsapp.data.repository.CountriesRepository
 import com.pratikbendre.newsapp.data.repository.LanguageRepository
 import com.pratikbendre.newsapp.data.repository.NewsSourcesRepository
+import com.pratikbendre.newsapp.data.repository.SearchRepository
 import com.pratikbendre.newsapp.data.repository.TopHeadlineBySourceRepository
 import com.pratikbendre.newsapp.data.repository.TopHeadlineRepository
 import com.pratikbendre.newsapp.di.ActivityContext
@@ -16,6 +17,8 @@ import com.pratikbendre.newsapp.ui.language.LanguageAdapter
 import com.pratikbendre.newsapp.ui.language.LanguageViewModel
 import com.pratikbendre.newsapp.ui.newsSources.NewsSourcesAdapter
 import com.pratikbendre.newsapp.ui.newsSources.NewsSourcesViewModel
+import com.pratikbendre.newsapp.ui.search.SearchAdapter
+import com.pratikbendre.newsapp.ui.search.SearchViewModel
 import com.pratikbendre.newsapp.ui.topheadline.TopHeadlineAdapter
 import com.pratikbendre.newsapp.ui.topheadline.TopHeadlineViewModel
 import com.pratikbendre.newsapp.ui.topheadlinebysource.TopHeadlineBySourceAdapter
@@ -94,4 +97,16 @@ class ActivityModule(private val activity: AppCompatActivity) {
 
     @Provides
     fun provideLanguageRepository() = LanguageRepository()
+
+
+    @Provides
+    fun provideSearchViewModel(searchRepository: SearchRepository): SearchViewModel {
+        return ViewModelProvider(activity,
+            ViewModelProviderFactory(SearchViewModel::class) {
+                SearchViewModel(searchRepository)
+            })[SearchViewModel::class.java]
+    }
+
+    @Provides
+    fun provideSerchAdapter() = SearchAdapter(ArrayList())
 }

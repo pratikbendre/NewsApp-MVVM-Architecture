@@ -5,4 +5,5 @@ object AppConstants {
     const val COUNTRY = "us"
     const val SOURCE = "source"
     const val LANGUAGE = "language"
+    const val DEBOUNCE_TIMEOUT = 300L
 }

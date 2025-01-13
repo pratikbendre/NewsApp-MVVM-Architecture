@@ -6,6 +6,7 @@ import com.pratikbendre.newsapp.databinding.ActivityMainBinding
 import com.pratikbendre.newsapp.ui.countries.CountriesActivity
 import com.pratikbendre.newsapp.ui.language.LanguageActivity
 import com.pratikbendre.newsapp.ui.newsSources.NewsSourcesActivity
+import com.pratikbendre.newsapp.ui.search.SearchActivity
 import com.pratikbendre.newsapp.ui.topheadline.TopHeadlineActivity
 import com.pratikbendre.newsapp.utils.AppConstants.COUNTRY
 
@@ -33,6 +34,9 @@ class MainActivity : AppCompatActivity() {
 
         binding.languageBtn.setOnClickListener {
             startActivity(LanguageActivity.getIntent(this))
+        }
+        binding.searchBtn.setOnClickListener {
+            startActivity(SearchActivity.getIntent(this))
         }
     }
 }
