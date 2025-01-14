@@ -14,40 +14,19 @@ import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+
 @HiltViewModel
 class TopHeadlineViewModel @Inject constructor(private val topHeadlineRepository: TopHeadlineRepository) :
     ViewModel() {
-    private val _uiState = MutableStateFlow<UiState<List<Article>>>(UiState.Loading)
+
+    private val _uiState = MutableStateFlow<UiState<List<Article>>>(UiState.Success(emptyList()))
+
     val uiState: StateFlow<UiState<List<Article>>> = _uiState
 
-    fun fetchNews(country: String) {
-        viewModelScope.launch {
-            topHeadlineRepository.getTopHeadlines(country)
-                .catch { e ->
-                    _uiState.value = UiState.Error(e.toString())
-                }.collect {
-                    _uiState.value = UiState.Success(it)
-                }
-        }
-    }
-
-
-    fun fetchNewsByLanguage(languages: List<String>) {
+    fun fetchNewsByCountry(country: String) {
         viewModelScope.launch {
             _uiState.value = UiState.Loading
-            val headlineFlows = languages.map { language ->
-                topHeadlineRepository.getTopHeadlinesByLanguage(language)
-            }
-            headlineFlows.reduce { flow1, flow2 ->
-                flow1.zip(flow2) { headlines1, headlines2 ->
-                    val allArticlesFromApi = mutableListOf<Article>()
-                    allArticlesFromApi.addAll(headlines1)
-                    allArticlesFromApi.addAll(headlines2)
-                    return@zip allArticlesFromApi
-                }
-            }.map {
-                it.shuffled()
-            }.catch { e ->
+            topHeadlineRepository.getTopHeadlines(country).catch { e ->
                 _uiState.value = UiState.Error(e.toString())
             }.collect {
                 _uiState.value = UiState.Success(it)
@@ -55,4 +34,24 @@ class TopHeadlineViewModel @Inject constructor(private val topHeadlineRepository
         }
     }
 
+
+    fun fetchNewsByTwoLanguage(language1: String, language2: String) {
+        viewModelScope.launch {
+            _uiState.value = UiState.Loading
+
+            topHeadlineRepository.getTopHeadlinesByLanguage(language1)
+                .zip(topHeadlineRepository.getTopHeadlinesByLanguage(language2)) { headlines1, headlines2 ->
+                    val allArticlesFromApi = mutableListOf<Article>()
+                    allArticlesFromApi.addAll(headlines1)
+                    allArticlesFromApi.addAll(headlines2)
+                    return@zip allArticlesFromApi
+                }.map {
+                    it.shuffled()
+                }.catch { e ->
+                    _uiState.value = UiState.Error(e.toString())
+                }.collect {
+                    _uiState.value = UiState.Success(it)
+                }
+        }
+    }
 }

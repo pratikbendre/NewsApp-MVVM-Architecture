@@ -15,7 +15,7 @@ import javax.inject.Inject
 @HiltViewModel
 class CountriesViewModel @Inject constructor(private val countriesRepository: CountriesRepository) :
     ViewModel() {
-    private val _uiState = MutableStateFlow<UiState<List<Country>>>(UiState.Loading)
+    private val _uiState = MutableStateFlow<UiState<List<Country>>>(UiState.Success(emptyList()))
     val uiState: StateFlow<UiState<List<Country>>> = _uiState
 
     init {
@@ -24,6 +24,7 @@ class CountriesViewModel @Inject constructor(private val countriesRepository: Co
 
     fun fetchCountries() {
         viewModelScope.launch {
+            _uiState.value = UiState.Loading
             countriesRepository.getCountris().catch { e ->
                 _uiState.value = UiState.Error(e.toString())
             }.collect {
