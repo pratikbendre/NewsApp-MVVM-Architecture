@@ -9,21 +9,21 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.pratikbendre.newsapp.NewsApplication
 import com.pratikbendre.newsapp.R
 import com.pratikbendre.newsapp.data.model.Article
 import com.pratikbendre.newsapp.databinding.ActivitySearchBinding
-import com.pratikbendre.newsapp.di.components.DaggerActivityComponent
-import com.pratikbendre.newsapp.di.module.ActivityModule
 import com.pratikbendre.newsapp.ui.base.UiState
 import com.pratikbendre.newsapp.utils.getQueryTextChangeStateFlow
 import com.pratikbendre.newsapp.utils.showAlert
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class SearchActivity : AppCompatActivity() {
     companion object {
         fun getIntent(context: Context): Intent {
@@ -36,15 +36,15 @@ class SearchActivity : AppCompatActivity() {
     @Inject
     lateinit var adapter: SearchAdapter
 
-    @Inject
-    lateinit var searchViewModel: SearchViewModel
+
+    private lateinit var searchViewModel: SearchViewModel
 
     private var search_query: String? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        getDependencies()
         binding = ActivitySearchBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        setupViewModel()
         setupUI()
         setupObserver()
         setupSearchflow()
@@ -98,10 +98,8 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
-    private fun getDependencies() {
-        DaggerActivityComponent.builder()
-            .applicationComponent((application as NewsApplication).applicationComponent)
-            .activityModule(ActivityModule(this)).build().inject(this)
+    private fun setupViewModel() {
+        searchViewModel = ViewModelProvider(this)[SearchViewModel::class.java]
     }
 
     fun renderlist(list: List<Article>) {

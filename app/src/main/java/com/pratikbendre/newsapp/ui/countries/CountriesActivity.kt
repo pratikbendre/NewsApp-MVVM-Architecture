@@ -7,21 +7,21 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.pratikbendre.newsapp.NewsApplication
 import com.pratikbendre.newsapp.R
 import com.pratikbendre.newsapp.data.model.Country
 import com.pratikbendre.newsapp.databinding.ActivityCountriesBinding
-import com.pratikbendre.newsapp.di.components.DaggerActivityComponent
-import com.pratikbendre.newsapp.di.module.ActivityModule
 import com.pratikbendre.newsapp.ui.base.UiState
 import com.pratikbendre.newsapp.ui.topheadline.TopHeadlineActivity
 import com.pratikbendre.newsapp.utils.showAlert
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class CountriesActivity : AppCompatActivity() {
     companion object {
         fun getIntent(context: Context): Intent {
@@ -34,13 +34,13 @@ class CountriesActivity : AppCompatActivity() {
     @Inject
     lateinit var adapter: CountriesAdapter
 
-    @Inject
-    lateinit var countriesViewModel: CountriesViewModel
+
+    private lateinit var countriesViewModel: CountriesViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
-        getDependencies()
         super.onCreate(savedInstanceState)
         binding = ActivityCountriesBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        setupViewModel()
         setupUI()
         setupObserver()
     }
@@ -85,10 +85,8 @@ class CountriesActivity : AppCompatActivity() {
         adapter.notifyDataSetChanged()
     }
 
-    private fun getDependencies() {
-        DaggerActivityComponent.builder()
-            .applicationComponent((application as NewsApplication).applicationComponent)
-            .activityModule(ActivityModule(this)).build().inject(this)
+    private fun setupViewModel() {
+        countriesViewModel = ViewModelProvider(this)[CountriesViewModel::class.java]
     }
 
 

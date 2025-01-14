@@ -5,12 +5,14 @@ import androidx.lifecycle.viewModelScope
 import com.pratikbendre.newsapp.data.model.Language
 import com.pratikbendre.newsapp.data.repository.LanguageRepository
 import com.pratikbendre.newsapp.ui.base.UiState
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@HiltViewModel
 class LanguageViewModel @Inject constructor(private val languageRepository: LanguageRepository) :
     ViewModel() {
     private val _uiState = MutableStateFlow<UiState<List<Language>>>(UiState.Loading)
