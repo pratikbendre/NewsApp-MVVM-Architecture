@@ -15,10 +15,11 @@ import javax.inject.Inject
 @HiltViewModel
 class TopHeadlineBySourceViewModel @Inject constructor(private val topHeadlineBySourceRepository: TopHeadlineBySourceRepository) :
     ViewModel() {
-    private val _uiState = MutableStateFlow<UiState<List<Article>>>(UiState.Loading)
+    private val _uiState = MutableStateFlow<UiState<List<Article>>>(UiState.Success(emptyList()))
     val uiState: StateFlow<UiState<List<Article>>> = _uiState
     fun fetchNewsBySource(source: String) {
         viewModelScope.launch {
+            _uiState.value = UiState.Loading
             topHeadlineBySourceRepository.getTopHeadlineBySource(source).catch { e ->
                 _uiState.value = UiState.Error(e.toString())
             }.collect {
@@ -29,6 +30,7 @@ class TopHeadlineBySourceViewModel @Inject constructor(private val topHeadlineBy
 
     fun fetchNewsByLanguage(language: String) {
         viewModelScope.launch {
+            _uiState.value = UiState.Loading
             topHeadlineBySourceRepository.getTopHeadlineByLanguage(language).catch { e ->
                 _uiState.value = UiState.Error(e.toString())
             }.collect {

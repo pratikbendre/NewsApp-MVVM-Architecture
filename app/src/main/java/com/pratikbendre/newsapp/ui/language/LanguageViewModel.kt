@@ -15,7 +15,7 @@ import javax.inject.Inject
 @HiltViewModel
 class LanguageViewModel @Inject constructor(private val languageRepository: LanguageRepository) :
     ViewModel() {
-    private val _uiState = MutableStateFlow<UiState<List<Language>>>(UiState.Loading)
+    private val _uiState = MutableStateFlow<UiState<List<Language>>>(UiState.Success(emptyList()))
     var uiState: StateFlow<UiState<List<Language>>> = _uiState
 
     init {
@@ -24,6 +24,7 @@ class LanguageViewModel @Inject constructor(private val languageRepository: Lang
 
     fun fetchLanguages() {
         viewModelScope.launch {
+            _uiState.value = UiState.Loading
             languageRepository.getLanguages().catch { e ->
                 _uiState.value = UiState.Error(e.toString())
             }.collect {

@@ -23,7 +23,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SearchViewModel @Inject constructor(private val searchRepository: SearchRepository) :
     ViewModel() {
-    private val _uiState = MutableStateFlow<UiState<List<Article>>>(UiState.Loading)
+    private val _uiState = MutableStateFlow<UiState<List<Article>>>(UiState.Success(emptyList()))
 
     val uiState: StateFlow<UiState<List<Article>>> = _uiState
 
