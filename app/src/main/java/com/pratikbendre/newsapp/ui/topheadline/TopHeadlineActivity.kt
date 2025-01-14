@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -19,22 +20,20 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
-import com.pratikbendre.newsapp.NewsApplication
 import com.pratikbendre.newsapp.R
 import com.pratikbendre.newsapp.data.model.Article
 import com.pratikbendre.newsapp.data.model.Language
 import com.pratikbendre.newsapp.databinding.ActivityTopHeadlineBinding
 import com.pratikbendre.newsapp.databinding.FilterBottomsheetLayoutBinding
-import com.pratikbendre.newsapp.di.components.DaggerActivityComponent
-import com.pratikbendre.newsapp.di.module.ActivityModule
 import com.pratikbendre.newsapp.ui.base.UiState
 import com.pratikbendre.newsapp.ui.language.LanguageViewModel
 import com.pratikbendre.newsapp.utils.showAlert
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class TopHeadlineActivity : AppCompatActivity() {
-
 
     companion object {
         const val EXTRAS_COUNTRY = "EXTRAS_COUNTRY"
@@ -45,25 +44,24 @@ class TopHeadlineActivity : AppCompatActivity() {
         }
     }
 
-    @Inject
-    lateinit var topHeadlineViewModel: TopHeadlineViewModel
+    private lateinit var topHeadlineViewModel: TopHeadlineViewModel
 
     @Inject
     lateinit var adapter: TopHeadlineAdapter
 
     private lateinit var binding: ActivityTopHeadlineBinding
 
-    @Inject
-    lateinit var languageViewModel: LanguageViewModel
+    private lateinit var languageViewModel: LanguageViewModel
+
 
     private var countryCode: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        injectDependencies()
         super.onCreate(savedInstanceState)
         binding = ActivityTopHeadlineBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setupUI()
+        setupViewModel()
         setupObserver()
 
         val getBundle: Bundle? = intent.extras
@@ -125,10 +123,9 @@ class TopHeadlineActivity : AppCompatActivity() {
         adapter.notifyDataSetChanged()
     }
 
-    private fun injectDependencies() {
-        DaggerActivityComponent.builder()
-            .applicationComponent((application as NewsApplication).applicationComponent)
-            .activityModule(ActivityModule(this)).build().inject(this)
+    private fun setupViewModel() {
+        topHeadlineViewModel = ViewModelProvider(this)[TopHeadlineViewModel::class.java]
+        languageViewModel = ViewModelProvider(this)[LanguageViewModel::class.java]
     }
 
 

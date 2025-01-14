@@ -7,22 +7,22 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.pratikbendre.newsapp.NewsApplication
 import com.pratikbendre.newsapp.R
 import com.pratikbendre.newsapp.data.model.Article
 import com.pratikbendre.newsapp.databinding.ActivityTopHeadlineBySourceBinding
-import com.pratikbendre.newsapp.di.components.DaggerActivityComponent
-import com.pratikbendre.newsapp.di.module.ActivityModule
 import com.pratikbendre.newsapp.ui.base.UiState
 import com.pratikbendre.newsapp.utils.AppConstants.LANGUAGE
 import com.pratikbendre.newsapp.utils.AppConstants.SOURCE
 import com.pratikbendre.newsapp.utils.showAlert
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class TopHeadlineBySourceActivity : AppCompatActivity() {
     companion object {
         const val EXTRAS_FILTER_NAME = "EXTRAS_FILTER_NAME"
@@ -41,16 +41,15 @@ class TopHeadlineBySourceActivity : AppCompatActivity() {
     @Inject
     lateinit var adapter: TopHeadlineBySourceAdapter
 
-    @Inject
-    lateinit var topHeadlineBySourceViewModel: TopHeadlineBySourceViewModel
+    private lateinit var topHeadlineBySourceViewModel: TopHeadlineBySourceViewModel
 
     private lateinit var filterName: String
     private lateinit var filterValue: String
     override fun onCreate(savedInstanceState: Bundle?) {
-        getDependencies()
         super.onCreate(savedInstanceState)
         binding = ActivityTopHeadlineBySourceBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        setupViewModel()
         setupUI()
         setupObservers()
         val bundle: Bundle? = intent.extras
@@ -97,11 +96,11 @@ class TopHeadlineBySourceActivity : AppCompatActivity() {
         }
     }
 
-    private fun getDependencies() {
-        DaggerActivityComponent.builder()
-            .applicationComponent((application as NewsApplication).applicationComponent)
-            .activityModule(ActivityModule(this)).build().inject(this)
+    private fun setupViewModel() {
+        topHeadlineBySourceViewModel =
+            ViewModelProvider(this)[TopHeadlineBySourceViewModel::class.java]
     }
+
 
     private fun renderList(article: List<Article>) {
         adapter.addData(article)

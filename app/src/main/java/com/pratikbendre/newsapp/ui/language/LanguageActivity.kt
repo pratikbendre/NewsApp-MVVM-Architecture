@@ -7,22 +7,22 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.pratikbendre.newsapp.NewsApplication
 import com.pratikbendre.newsapp.R
 import com.pratikbendre.newsapp.data.model.Language
 import com.pratikbendre.newsapp.databinding.ActivityLanguageBinding
-import com.pratikbendre.newsapp.di.components.DaggerActivityComponent
-import com.pratikbendre.newsapp.di.module.ActivityModule
 import com.pratikbendre.newsapp.ui.base.UiState
 import com.pratikbendre.newsapp.ui.topheadlinebysource.TopHeadlineBySourceActivity
 import com.pratikbendre.newsapp.utils.AppConstants.LANGUAGE
 import com.pratikbendre.newsapp.utils.showAlert
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class LanguageActivity : AppCompatActivity() {
     companion object {
         fun getIntent(context: Context): Intent {
@@ -33,16 +33,16 @@ class LanguageActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLanguageBinding
 
 
-    @Inject
-    lateinit var languageViewModel: LanguageViewModel
+    private lateinit var languageViewModel: LanguageViewModel
+
 
     @Inject
     lateinit var adapter: LanguageAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
-        getDependencies()
         super.onCreate(savedInstanceState)
         binding = ActivityLanguageBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        setupViewModel()
         setupUI()
         setupObservers()
         adapter.itemClickListener = {
@@ -83,13 +83,10 @@ class LanguageActivity : AppCompatActivity() {
         }
     }
 
-    fun getDependencies() {
-        DaggerActivityComponent.builder()
-            .applicationComponent((application as NewsApplication).applicationComponent)
-            .activityModule(ActivityModule(this))
-            .build()
-            .inject(this)
+    private fun setupViewModel() {
+        languageViewModel = ViewModelProvider(this)[LanguageViewModel::class.java]
     }
+
 
     private fun renderList(languagesList: List<Language>) {
         adapter.addData(languagesList)

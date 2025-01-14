@@ -7,22 +7,23 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.pratikbendre.newsapp.NewsApplication
 import com.pratikbendre.newsapp.R
 import com.pratikbendre.newsapp.data.model.NewsSources
 import com.pratikbendre.newsapp.databinding.ActivityNewsSourcesBinding
-import com.pratikbendre.newsapp.di.components.DaggerActivityComponent
-import com.pratikbendre.newsapp.di.module.ActivityModule
 import com.pratikbendre.newsapp.ui.base.UiState
 import com.pratikbendre.newsapp.ui.topheadlinebysource.TopHeadlineBySourceActivity
 import com.pratikbendre.newsapp.utils.AppConstants.SOURCE
 import com.pratikbendre.newsapp.utils.showAlert
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+
+@AndroidEntryPoint
 class NewsSourcesActivity : AppCompatActivity() {
     companion object {
         fun getIntent(context: Context): Intent {
@@ -32,16 +33,15 @@ class NewsSourcesActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityNewsSourcesBinding
 
-    @Inject
-    lateinit var newsSourcesViewModel: NewsSourcesViewModel
+    private lateinit var newsSourcesViewModel: NewsSourcesViewModel
 
     @Inject
     lateinit var adapter: NewsSourcesAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
-        getDependencies()
         super.onCreate(savedInstanceState)
         binding = ActivityNewsSourcesBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        setupViewModel()
         setupUI()
         setupObserver()
     }
@@ -86,10 +86,8 @@ class NewsSourcesActivity : AppCompatActivity() {
         adapter.notifyDataSetChanged()
     }
 
-    private fun getDependencies() {
-        DaggerActivityComponent.builder()
-            .applicationComponent((application as NewsApplication).applicationComponent)
-            .activityModule(ActivityModule(this)).build().inject(this)
+    private fun setupViewModel() {
+        newsSourcesViewModel = ViewModelProvider(this)[NewsSourcesViewModel::class.java]
     }
 
 
