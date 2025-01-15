@@ -18,7 +18,6 @@ import com.pratikbendre.newsapp.ui.offlinearticle.OfflineArticleRoute
 import com.pratikbendre.newsapp.ui.search.SearchRoute
 import com.pratikbendre.newsapp.ui.topheadline.TopheadlineRoute
 import com.pratikbendre.newsapp.ui.topheadlinebysource.TopHeadlineBySourceScreenRoute
-import com.pratikbendre.newsapp.ui.topheadlinepagination.TopHeadlinePaginationRoute
 
 sealed class Route(val name: String) {
     object Main : Route("main")
@@ -36,7 +35,6 @@ sealed class Route(val name: String) {
     object Languages : Route("languages")
     object Search : Route("search")
     object OfflineArticle : Route("offlinearticle")
-    object TopHeadlinePagination : Route("topheadlinepagination")
 }
 
 @Composable
@@ -89,11 +87,6 @@ fun NavHost() {
         }
         composable(route = Route.OfflineArticle.name) {
             OfflineArticleRoute(onNewsClick = {
-                openCustomTab(context, it)
-            })
-        }
-        composable(route = Route.TopHeadlinePagination.name) {
-            TopHeadlinePaginationRoute(onNewsClick = {
                 openCustomTab(context, it)
             })
         }

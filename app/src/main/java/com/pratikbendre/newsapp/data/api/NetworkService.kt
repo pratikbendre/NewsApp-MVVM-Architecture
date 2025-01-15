@@ -28,12 +28,4 @@ interface NetworkService {
 
     @GET("everything")
     suspend fun searchNews(@Query("q") data: String): TopHeadlinesResponse
-
-    @GET("top-headlines")
-    suspend fun getTopHeadlinesByPagination(
-        @Query("country") country: String,
-        @Query("page") page: Int,
-        @Query("pageSize") pageSize: Int
-    ): TopHeadlinesResponse
-
 }
