@@ -10,4 +10,6 @@ object AppConstants {
     const val COUNTRY_UAE = "ae"
     const val LANGUAGE_EN = "en"
     const val SOURCE_ABC_NEWS = "abc-news"
+    const val INITIAL_PAGE = 1
+    const val PAGE_SIZE = 10
 }
