@@ -27,7 +27,8 @@ fun MainScreenRoute(navController: NavHostController) {
         "News Sources" to Route.NewsSource.name,
         "Countries" to Route.Countries.name,
         "Language" to Route.Languages.name,
-        "Search" to Route.Search.name
+        "Search" to Route.Search.name,
+        "Offline Article" to Route.OfflineArticle.name
     )
     Scaffold(topBar = {
         TopAppBar(colors = TopAppBarDefaults.smallTopAppBarColors(

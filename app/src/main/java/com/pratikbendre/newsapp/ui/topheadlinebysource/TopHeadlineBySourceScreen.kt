@@ -17,7 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.pratikbendre.newsapp.data.model.Article
+import com.pratikbendre.newsapp.data.model.ArticleModel
 import com.pratikbendre.newsapp.ui.base.ShowArticle
 import com.pratikbendre.newsapp.ui.base.ShowError
 import com.pratikbendre.newsapp.ui.base.ShowLoading
@@ -53,7 +53,7 @@ fun TopHeadlineBySourceScreenRoute(
 
 @Composable
 fun TopHeadlineBySourceScreen(
-    newsBySourceuiState: UiState<List<Article>>, onNewsClick: (url: String) -> Unit
+    newsBySourceuiState: UiState<List<ArticleModel>>, onNewsClick: (url: String) -> Unit
 ) {
     when (newsBySourceuiState) {
         is UiState.Success -> {
@@ -71,9 +71,9 @@ fun TopHeadlineBySourceScreen(
 }
 
 @Composable
-private fun ArticleList(articles: List<Article>, onNewsClick: (url: String) -> Unit) {
+private fun ArticleList(articleModels: List<ArticleModel>, onNewsClick: (url: String) -> Unit) {
     LazyColumn {
-        items(articles, key = { article -> article.url }) { article ->
+        items(articleModels, key = { article -> article.url }) { article ->
             ShowArticle(article, onNewsClick)
         }
     }

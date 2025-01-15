@@ -2,7 +2,7 @@ package com.pratikbendre.newsapp.ui.topheadline
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.pratikbendre.newsapp.data.model.Article
+import com.pratikbendre.newsapp.data.model.ArticleModel
 import com.pratikbendre.newsapp.data.repository.TopHeadlineRepository
 import com.pratikbendre.newsapp.ui.base.UiState
 import com.pratikbendre.newsapp.utils.DispatcherProvider
@@ -23,9 +23,10 @@ class TopHeadlineViewModel @Inject constructor(
 ) :
     ViewModel() {
 
-    private val _uiState = MutableStateFlow<UiState<List<Article>>>(UiState.Success(emptyList()))
+    private val _uiState =
+        MutableStateFlow<UiState<List<ArticleModel>>>(UiState.Success(emptyList()))
 
-    val uiState: StateFlow<UiState<List<Article>>> = _uiState
+    val uiState: StateFlow<UiState<List<ArticleModel>>> = _uiState
 
     fun fetchNewsByCountry(country: String) {
         viewModelScope.launch(dispatcherProvider.io) {
@@ -45,7 +46,7 @@ class TopHeadlineViewModel @Inject constructor(
 
             topHeadlineRepository.getTopHeadlinesByLanguage(language1)
                 .zip(topHeadlineRepository.getTopHeadlinesByLanguage(language2)) { headlines1, headlines2 ->
-                    val allArticlesFromApi = mutableListOf<Article>()
+                    val allArticlesFromApi = mutableListOf<ArticleModel>()
                     allArticlesFromApi.addAll(headlines1)
                     allArticlesFromApi.addAll(headlines2)
                     return@zip allArticlesFromApi

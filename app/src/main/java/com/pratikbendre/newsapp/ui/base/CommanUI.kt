@@ -26,8 +26,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.pratikbendre.newsapp.R
-import com.pratikbendre.newsapp.data.model.Article
-import com.pratikbendre.newsapp.data.model.Source
+import com.pratikbendre.newsapp.data.model.ArticleModel
+import com.pratikbendre.newsapp.data.model.SourceModel
 
 @Composable
 fun ShowLoading() {
@@ -64,25 +64,25 @@ fun ShowError(text: String) {
 }
 
 @Composable
-fun ShowArticle(article: Article, onNewsClick: (url: String) -> Unit) {
+fun ShowArticle(articleModel: ArticleModel, onNewsClick: (url: String) -> Unit) {
     Column(modifier = Modifier
         .fillMaxWidth()
         .clickable {
-            if (article.url.isNotEmpty()) {
-                onNewsClick(article.url)
+            if (articleModel.url.isNotEmpty()) {
+                onNewsClick(articleModel.url)
             }
         }) {
-        BannerImage(article)
-        TitleText(article.title)
-        DescriptionText(article.description)
-        SourceText(article.source)
+        BannerImage(articleModel)
+        TitleText(articleModel.title)
+        DescriptionText(articleModel.description)
+        SourceText(articleModel.sourceModel)
     }
 }
 
 @Composable
-fun BannerImage(article: Article) {
+fun BannerImage(articleModel: ArticleModel) {
     AsyncImage(
-        model = article.imageurl, contentDescription = article.title,
+        model = articleModel.imageurl, contentDescription = articleModel.title,
         contentScale = ContentScale.Crop,
         modifier = Modifier
             .height(200.dp)
@@ -117,9 +117,9 @@ fun DescriptionText(description: String?) {
 }
 
 @Composable
-fun SourceText(source: Source) {
+fun SourceText(sourceModel: SourceModel) {
     Text(
-        text = source.name,
+        text = sourceModel.name,
         style = MaterialTheme.typography.titleSmall,
         color = Color.Gray,
         maxLines = 1,

@@ -2,7 +2,7 @@ package com.pratikbendre.newsapp.ui.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.pratikbendre.newsapp.data.model.Article
+import com.pratikbendre.newsapp.data.model.ArticleModel
 import com.pratikbendre.newsapp.data.repository.SearchRepository
 import com.pratikbendre.newsapp.ui.base.UiState
 import com.pratikbendre.newsapp.utils.AppConstants.DEBOUNCE_TIMEOUT
@@ -27,9 +27,10 @@ class SearchViewModel @Inject constructor(
     private val dispatcherProvider: DispatcherProvider
 ) :
     ViewModel() {
-    private val _uiState = MutableStateFlow<UiState<List<Article>>>(UiState.Success(emptyList()))
+    private val _uiState =
+        MutableStateFlow<UiState<List<ArticleModel>>>(UiState.Success(emptyList()))
 
-    val uiState: StateFlow<UiState<List<Article>>> = _uiState
+    val uiState: StateFlow<UiState<List<ArticleModel>>> = _uiState
 
     private val query = MutableStateFlow("")
 

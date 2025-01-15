@@ -14,6 +14,7 @@ import com.pratikbendre.newsapp.ui.countries.CountriesRoute
 import com.pratikbendre.newsapp.ui.language.LanguageRoute
 import com.pratikbendre.newsapp.ui.main.MainScreenRoute
 import com.pratikbendre.newsapp.ui.newsSources.NewsSourceRoute
+import com.pratikbendre.newsapp.ui.offlinearticle.OfflineArticleRoute
 import com.pratikbendre.newsapp.ui.search.SearchRoute
 import com.pratikbendre.newsapp.ui.topheadline.TopheadlineRoute
 import com.pratikbendre.newsapp.ui.topheadlinebysource.TopHeadlineBySourceScreenRoute
@@ -33,6 +34,7 @@ sealed class Route(val name: String) {
     object Countries : Route("countries")
     object Languages : Route("languages")
     object Search : Route("search")
+    object OfflineArticle : Route("offlinearticle")
 }
 
 @Composable
@@ -80,6 +82,11 @@ fun NavHost() {
         }
         composable(route = Route.Search.name) {
             SearchRoute(onNewsClick = {
+                openCustomTab(context, it)
+            })
+        }
+        composable(route = Route.OfflineArticle.name) {
+            OfflineArticleRoute(onNewsClick = {
                 openCustomTab(context, it)
             })
         }
