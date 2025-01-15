@@ -23,7 +23,7 @@ import com.pratikbendre.newsapp.utils.AppConstants
 @Composable
 fun MainScreenRoute(navController: NavHostController) {
     val buttonItems: List<Pair<String, String>> = listOf(
-        "Top Headlines" to Route.TopHeadline.createRoute(AppConstants.COUNTRY),
+        "Top Headlines" to Route.TopHeadline.createRoute(AppConstants.COUNTRY_US),
         "News Sources" to Route.NewsSource.name,
         "Countries" to Route.Countries.name,
         "Language" to Route.Languages.name,

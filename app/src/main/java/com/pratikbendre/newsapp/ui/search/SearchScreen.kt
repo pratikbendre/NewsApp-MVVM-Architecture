@@ -21,7 +21,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
@@ -35,9 +34,6 @@ import com.pratikbendre.newsapp.ui.base.ShowArticle
 import com.pratikbendre.newsapp.ui.base.ShowError
 import com.pratikbendre.newsapp.ui.base.ShowLoading
 import com.pratikbendre.newsapp.ui.base.UiState
-import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -90,13 +86,7 @@ private fun ArticleList(articles: List<Article>, onNewsClick: (url: String) -> U
 fun SearchBar(viewModel: SearchViewModel) {
     var searchQuery by remember { mutableStateOf("") }
     LaunchedEffect(searchQuery) {
-        snapshotFlow { searchQuery }
-            .debounce(300)
-            .filter { it.isNotBlank() }
-            .distinctUntilChanged()
-            .collect { query ->
-                viewModel.fetchnews(query)
-            }
+        viewModel.fetchnews(searchQuery)
     }
     BasicTextField(
         value = searchQuery,

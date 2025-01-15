@@ -8,7 +8,7 @@ import javax.inject.Singleton
 
 @Singleton
 class CountriesRepository {
-    fun getCountris(): Flow<List<Country>> {
+    fun getCountries(): Flow<List<Country>> {
         return flow { emit(getCountriesList()) }.map {
             it
         }

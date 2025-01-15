@@ -5,6 +5,8 @@ import com.pratikbendre.newsapp.data.api.NetworkService
 import com.pratikbendre.newsapp.data.repository.CountriesRepository
 import com.pratikbendre.newsapp.data.repository.LanguageRepository
 import com.pratikbendre.newsapp.di.BaseUrl
+import com.pratikbendre.newsapp.utils.DefaultDispatcherProvider
+import com.pratikbendre.newsapp.utils.DispatcherProvider
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -50,4 +52,8 @@ class ApplicationModule {
     @Singleton
     @Provides
     fun provideLanguageRepository() = LanguageRepository()
+
+    @Provides
+    @Singleton
+    fun provideDispatcherProvider(): DispatcherProvider = DefaultDispatcherProvider()
 }
