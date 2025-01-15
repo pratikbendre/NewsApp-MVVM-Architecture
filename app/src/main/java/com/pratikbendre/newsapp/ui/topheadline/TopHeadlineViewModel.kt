@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.pratikbendre.newsapp.data.model.Article
 import com.pratikbendre.newsapp.data.repository.TopHeadlineRepository
 import com.pratikbendre.newsapp.ui.base.UiState
+import com.pratikbendre.newsapp.utils.DispatcherProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,7 +17,10 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class TopHeadlineViewModel @Inject constructor(private val topHeadlineRepository: TopHeadlineRepository) :
+class TopHeadlineViewModel @Inject constructor(
+    private val topHeadlineRepository: TopHeadlineRepository,
+    private val dispatcherProvider: DispatcherProvider
+) :
     ViewModel() {
 
     private val _uiState = MutableStateFlow<UiState<List<Article>>>(UiState.Success(emptyList()))
@@ -24,7 +28,7 @@ class TopHeadlineViewModel @Inject constructor(private val topHeadlineRepository
     val uiState: StateFlow<UiState<List<Article>>> = _uiState
 
     fun fetchNewsByCountry(country: String) {
-        viewModelScope.launch {
+        viewModelScope.launch(dispatcherProvider.io) {
             _uiState.value = UiState.Loading
             topHeadlineRepository.getTopHeadlines(country).catch { e ->
                 _uiState.value = UiState.Error(e.toString())
@@ -36,7 +40,7 @@ class TopHeadlineViewModel @Inject constructor(private val topHeadlineRepository
 
 
     fun fetchNewsByTwoLanguage(language1: String, language2: String) {
-        viewModelScope.launch {
+        viewModelScope.launch(dispatcherProvider.io) {
             _uiState.value = UiState.Loading
 
             topHeadlineRepository.getTopHeadlinesByLanguage(language1)

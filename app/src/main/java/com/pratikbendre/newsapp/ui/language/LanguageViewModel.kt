@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.pratikbendre.newsapp.data.model.Language
 import com.pratikbendre.newsapp.data.repository.LanguageRepository
 import com.pratikbendre.newsapp.ui.base.UiState
+import com.pratikbendre.newsapp.utils.DispatcherProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,7 +14,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class LanguageViewModel @Inject constructor(private val languageRepository: LanguageRepository) :
+class LanguageViewModel @Inject constructor(
+    private val languageRepository: LanguageRepository,
+    private val dispatcherProvider: DispatcherProvider
+) :
     ViewModel() {
     private val _uiState = MutableStateFlow<UiState<List<Language>>>(UiState.Success(emptyList()))
     var uiState: StateFlow<UiState<List<Language>>> = _uiState
@@ -23,7 +27,7 @@ class LanguageViewModel @Inject constructor(private val languageRepository: Lang
     }
 
     fun fetchLanguages() {
-        viewModelScope.launch {
+        viewModelScope.launch(dispatcherProvider.io) {
             _uiState.value = UiState.Loading
             languageRepository.getLanguages().catch { e ->
                 _uiState.value = UiState.Error(e.toString())

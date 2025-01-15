@@ -6,6 +6,7 @@ import com.pratikbendre.newsapp.data.model.Article
 import com.pratikbendre.newsapp.data.repository.SearchRepository
 import com.pratikbendre.newsapp.ui.base.UiState
 import com.pratikbendre.newsapp.utils.AppConstants.DEBOUNCE_TIMEOUT
+import com.pratikbendre.newsapp.utils.DispatcherProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,7 +22,10 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class SearchViewModel @Inject constructor(private val searchRepository: SearchRepository) :
+class SearchViewModel @Inject constructor(
+    private val searchRepository: SearchRepository,
+    private val dispatcherProvider: DispatcherProvider
+) :
     ViewModel() {
     private val _uiState = MutableStateFlow<UiState<List<Article>>>(UiState.Success(emptyList()))
 
@@ -40,7 +44,7 @@ class SearchViewModel @Inject constructor(private val searchRepository: SearchRe
     }
 
     fun setupflow() {
-        viewModelScope.launch {
+        viewModelScope.launch(dispatcherProvider.io) {
             query.debounce(DEBOUNCE_TIMEOUT).filter {
                 if (it.isNotEmpty()) {
                     return@filter true
