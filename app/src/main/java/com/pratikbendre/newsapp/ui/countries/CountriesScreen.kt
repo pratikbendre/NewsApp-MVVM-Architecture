@@ -39,13 +39,16 @@ fun CountriesRoute(
         ), title = { Text(text = "Countries") })
     }, content = { padding ->
         Column(modifier = Modifier.padding(padding)) {
-            CountriesScreen(navController, countriesUiState)
+            CountriesScreen(navController, countriesUiState, viewModel::fetchCountries)
         }
     })
 }
 
 @Composable
-fun CountriesScreen(navController: NavController, uiState: UiState<List<Country>>) {
+fun CountriesScreen(
+    navController: NavController, uiState: UiState<List<Country>>,
+    onretry: () -> Unit
+) {
     when (uiState) {
         is UiState.Success -> {
             CountriesList(navController, uiState.data)
@@ -56,7 +59,7 @@ fun CountriesScreen(navController: NavController, uiState: UiState<List<Country>
         }
 
         is UiState.Error -> {
-            ShowError(uiState.message)
+            ShowError(onClick = onretry, uiState.message)
         }
     }
 }

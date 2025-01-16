@@ -64,7 +64,7 @@ fun OfflineArticleScreen(uiState: UiState<List<Article>>, onNewsClick: (url: Str
         }
 
         is UiState.Error -> {
-            ShowError(uiState.message)
+            ShowError(onClick = {}, uiState.message)
         }
     }
 }

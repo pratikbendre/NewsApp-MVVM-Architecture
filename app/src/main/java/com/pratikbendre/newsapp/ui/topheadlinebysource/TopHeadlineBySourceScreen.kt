@@ -65,7 +65,7 @@ fun TopHeadlineBySourceScreen(
         }
 
         is UiState.Error -> {
-            ShowError(newsBySourceuiState.message)
+            ShowError(onClick = { }, newsBySourceuiState.message)
         }
     }
 }

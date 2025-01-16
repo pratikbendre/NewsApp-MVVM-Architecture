@@ -42,14 +42,17 @@ fun LanguageRoute(
         ), title = { Text(text = "Languages") })
     }, content = { padding ->
         Column(modifier = Modifier.padding(padding)) {
-            LanguageScreen(navController, languageUiState)
+            LanguageScreen(navController, languageUiState, viewModel::fetchLanguages)
         }
     })
 }
 
 
 @Composable
-fun LanguageScreen(navController: NavController, uiState: UiState<List<Language>>) {
+fun LanguageScreen(
+    navController: NavController, uiState: UiState<List<Language>>,
+    onretry: () -> Unit
+) {
 
     when (uiState) {
         is UiState.Success -> {
@@ -61,7 +64,7 @@ fun LanguageScreen(navController: NavController, uiState: UiState<List<Language>
         }
 
         is UiState.Error -> {
-            ShowError(uiState.message)
+            ShowError(onClick = onretry, uiState.message)
         }
     }
 }

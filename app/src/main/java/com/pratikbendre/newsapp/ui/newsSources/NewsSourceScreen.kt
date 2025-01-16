@@ -40,13 +40,16 @@ fun NewsSourceRoute(
         ), title = { Text(text = "News Sources") })
     }, content = { padding ->
         Column(modifier = Modifier.padding(padding)) {
-            NewsSourceScreen(navController, newsSourceUiState)
+            NewsSourceScreen(navController, newsSourceUiState, viewModel::fetchSource)
         }
     })
 }
 
 @Composable
-fun NewsSourceScreen(navController: NavController, uiState: UiState<List<NewsSources>>) {
+fun NewsSourceScreen(
+    navController: NavController, uiState: UiState<List<NewsSources>>,
+    onretry: () -> Unit
+) {
     when (uiState) {
         is UiState.Success -> {
             SourceList(navController, uiState.data)
@@ -57,7 +60,7 @@ fun NewsSourceScreen(navController: NavController, uiState: UiState<List<NewsSou
         }
 
         is UiState.Error -> {
-            ShowError(uiState.message)
+            ShowError(onClick = onretry, uiState.message)
         }
     }
 }

@@ -62,7 +62,7 @@ fun TopHeadlinePaginationScreen(
 
             loadState.refresh is LoadState.Error -> {
                 val error = articles.loadState.refresh as LoadState.Error
-                ShowError(error.error.localizedMessage!!)
+                ShowError(onClick = {}, error.error.localizedMessage!!)
             }
 
             loadState.append is LoadState.Loading -> {
@@ -71,7 +71,7 @@ fun TopHeadlinePaginationScreen(
 
             loadState.append is LoadState.Error -> {
                 val error = articles.loadState.append as LoadState.Error
-                ShowError(error.error.localizedMessage!!)
+                ShowError(onClick = {}, error.error.localizedMessage!!)
             }
         }
     }

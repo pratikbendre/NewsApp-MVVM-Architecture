@@ -14,4 +14,5 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "NewsApp-MVVM-Architecture"
+enableFeaturePreview('VERSION_CATALOGS')
 include ':app'

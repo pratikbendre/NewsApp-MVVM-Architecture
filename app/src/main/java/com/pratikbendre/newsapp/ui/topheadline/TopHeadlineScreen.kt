@@ -1,6 +1,7 @@
 package com.pratikbendre.newsapp.ui.topheadline
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -23,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pratikbendre.newsapp.data.model.ArticleModel
@@ -60,16 +62,25 @@ fun TopheadlineRoute(
         Column(modifier = Modifier.padding(padding)) {
             TopHeadlineScreen(uiState, onNewsClick)
             if (showBottomSheet) {
+                val context = LocalContext.current
                 LanguageFilterScreen(
                     uiState = languageUiState,
                     onDismissRequest = { showBottomSheet = false },
                     onApplyFilters = { filters ->
                         Log.d("TAG", "TopheadlineRoute: " + filters)
                         val filterList = filters.toList()
-                        viewModel.fetchNewsByTwoLanguage(
-                            filterList.get(0).Code,
-                            filterList.get(1).Code
-                        )
+                        if (filterList.size == 2) {
+                            viewModel.fetchNewsByTwoLanguage(
+                                filterList.get(0).Code,
+                                filterList.get(1).Code
+                            )
+                        } else {
+                            Toast.makeText(
+                                context,
+                                "Please select exactly 2 languages.",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
                     })
             }
         }
@@ -88,7 +99,7 @@ fun TopHeadlineScreen(uiState: UiState<List<ArticleModel>>, onNewsClick: (url: S
         }
 
         is UiState.Error -> {
-            ShowError(uiState.message)
+            ShowError(onClick = {}, uiState.message)
         }
     }
 }
@@ -122,7 +133,7 @@ fun LanguageFilterScreen(
         }
 
         is UiState.Error -> {
-            ShowError(uiState.message)
+            ShowError(onClick = {}, uiState.message)
         }
     }
 }

@@ -68,7 +68,7 @@ fun SearchScreen(uiState: UiState<List<ArticleModel>>, onNewsClick: (url: String
         }
 
         is UiState.Error -> {
-            ShowError(uiState.message)
+            ShowError(onClick = {}, uiState.message)
         }
     }
 }
