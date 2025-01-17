@@ -1,8 +1,8 @@
 # NewsApp-MVVM-Architecture
 
 This is a News App built to demonstrate the **MVVM** architecture in Kotlin. It leverages modern
-Android technologies such as **Jetpack Compose**, **Dagger Hilt**, **Retrofit**, **RoomDB**, *
-*Coroutines**, and **Flow**.
+Android technologies such as **Jetpack Compose**, **Dagger Hilt**, **Retrofit**, **RoomDB**, 
+**Coroutines**, and **Flow**.
 
 ---
 
